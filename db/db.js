@@ -34,4 +34,5 @@ async function initializeDB() {
     }
 }
 
-export { pool, initializeDB };
+export default pool;
+export {  initializeDB };
