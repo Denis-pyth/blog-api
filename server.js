@@ -1,5 +1,6 @@
 import express from "express";
 import routes from "./routes/routes.js";
+import authRoutes from "./routes/auth.routes.js";
 import { initializeDB } from "./db/db.js";
 
 
@@ -9,6 +10,7 @@ app.use(express.json());
 // Initialize DB
 initializeDB();
 
+app.use("/auth", authRoutes)
 app.use("/posts", routes);
 
 // Start server

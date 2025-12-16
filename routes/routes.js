@@ -7,12 +7,16 @@ import {
   deletePost
 } from "../controllers/controller.js";
 
-const router = express.Router();
+import { authenticate } from "../middleware/auth.middleware.js";
 
+const router = express.Router();
+//public routes
 router.get("/", getAllPosts);
 router.get("/:id", getPostById);
-router.post("/", createPost);
-router.put("/:id", updatePost);
-router.delete("/:id", deletePost);
+
+//protected routes
+router.post("/",authenticate, createPost);
+router.put("/:id",authenticate, updatePost);
+router.delete("/:id",authenticate, deletePost);
 
 export default router;

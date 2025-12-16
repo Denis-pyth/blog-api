@@ -25,8 +25,17 @@ async function initializeDB() {
                 created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
             );
         `;
+        const createUserTable = `
+         CREATE TABLE users   (
+            id SERIAL PRIMARY KEY,
+            email VARCHAR(400) UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            Created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+         );
+        `;
 
         await pool.query(createTableQuery);
+        await pool.query(createUserTable);
         console.log("Database Initialized.");
     } catch (error) {
         console.error("Error connecting or initializing the database:", error.message);
