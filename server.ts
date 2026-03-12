@@ -10,7 +10,7 @@ app.use(express.json());
 // Initialize DB
 initializeDB();
 
-app.use("/auth", authRoutes)
+app.use("/auth", authRoutes);
 app.use("/posts", routes);
 
 // Start server
