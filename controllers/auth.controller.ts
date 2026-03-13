@@ -1,21 +1,41 @@
 import * as authService from "../service/auth.service.js";
+import { Request, Response } from "express";
 
-export async function register(req, res) {
+interface RegisterBody {
+    email: string;
+    password: string;
+}
+
+interface LoginBody {
+    email: string;
+    password: string;
+}
+
+
+export async function register(req: Request<{},{}, RegisterBody>, res: Response): Promise<void> {
   try {
     const { email, password } = req.body;
     const user = await authService.registerUser(email, password);
     res.status(201).json({ success: true, data: user });
   } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
-  }
-}
+        if (err instanceof Error) {
+            res.status(400).json({ success: false, message: err.message });
+        } else {
+            res.status(400).json({ success: false, message: "An unexpected error occurred" });
+        }
+    }
+}    
 
-export async function login(req, res) {
+export async function login(req: Request<{},{}, LoginBody>, res: Response): Promise<void> {
   try {
     const { email, password } = req.body;
-    const token = await authService.loginUser(email, password);
-    res.json({ success: true, token });
+    const result = await authService.loginUser(email, password);
+    res.json({ success: true, data: result });
   } catch (err) {
-    res.status(401).json({ success: false, message: err.message });
-  }
+              if (err instanceof Error) {
+            res.status(400).json({ success: false, message: err.message });
+        } else {
+            res.status(400).json({ success: false, message: "An unexpected error occurred" });
+        }
+    }
 }
