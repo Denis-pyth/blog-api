@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Router } from "express";
 import {
   getAllPosts,
   getPostById,
@@ -9,7 +9,7 @@ import {
 
 import { authenticate } from "../middleware/auth.middleware.js";
 
-const router = express.Router();
+const router: Router = express.Router();
 //public routes
 router.get("/", getAllPosts);
 router.get("/:id", getPostById);
