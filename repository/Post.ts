@@ -1,25 +1,25 @@
 import pool from "../db/db";
 
-interface Post {
-  id: Number;
-  title: String;
-  content: String;
-  author: String;
+export interface Post {
+  id: number;
+  title: string;
+  content: string;
+  author: string;
   Created_at: Date;
   Updated_at?: Date
 
 }
 
-interface CreatePostInput {
-  title: String;
-  content: String;
-  author: String;
+export interface CreatePostInput {
+  title: string;
+  content: string;
+  author: string;
 }
 
-interface UpdatePostInput {
-  title: String;
-  content: String;
-  author: String;
+export interface UpdatePostInput {
+  title: string;
+  content: string;
+  author: string;
 }
 
 
@@ -44,7 +44,7 @@ export async function getAll(): Promise<Post[]> {
 }
 
 //GET post by ID
-export async function getById(id: Number): Promise<Post | null> {
+export async function getById(id: number): Promise<Post | null> {
   const result = await pool.query<Post>(
     "SELECT * FROM posts WHERE id = $1",
     [id]
@@ -54,7 +54,7 @@ export async function getById(id: Number): Promise<Post | null> {
 
 // Update post
 
-export async function update(id: Number, input: UpdatePostInput): Promise<Post | null> {
+export async function update(id: number, input: UpdatePostInput): Promise<Post | null> {
   const query = `
     UPDATE posts
     SET title = $1,
@@ -70,7 +70,7 @@ export async function update(id: Number, input: UpdatePostInput): Promise<Post |
 }
 
 // Delete post
-export async function remove(id: Number): Promise<Boolean> {
+export async function remove(id: number): Promise<boolean> {
   const result = await pool.query(
     "DELETE FROM posts WHERE id = $1 RETURNING id",
     [id]
