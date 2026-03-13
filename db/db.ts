@@ -3,45 +3,76 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const pool = new pg.Pool({
-    user: process.env.PG_USER,
-    host: process.env.PG_HOST,
-    database: process.env.PG_DATABASE,
-    password: process.env.PG_PASSWORD,   
-    port: process.env.PG_PORT,
-});
+interface DBConfig {
+    user: string;
+    host: string;
+    database: string;
+    password: string;
+    port: number;
+    max: number;              // max connections in pool
+    idleTimeoutMillis: number;
+    connectionTimeoutMillis: number;
+}
 
-async function initializeDB() {
+
+function getEnvVar(key: string): string {
+    const value = process.env[key];
+    if (!value) {
+        console.error(` Missing environment variable: ${key}`);
+        process.exit(1);
+    }
+    return value;
+}
+
+
+const dbConfig: DBConfig = {
+    user: getEnvVar("PG_USER"),
+    host: getEnvVar("PG_HOST"),
+    database: getEnvVar("PG_DATABASE"),
+    password: getEnvVar("PG_PASSWORD"),
+    port: parseInt(getEnvVar("PG_PORT"), 10), 
+    max: 20,                        // max 20 simultaneous DB connections
+    idleTimeoutMillis: 30000,       // close idle connections after 30s
+    connectionTimeoutMillis: 2000,  // fail fast if can't connect in 2s
+};
+
+const pool = new pg.Pool(dbConfig);
+
+async function initializeDB(): Promise<void> {
     try {
         await pool.query("SELECT NOW()");
         console.log("PostgreSQL connection established successfully.");
-
-        const createTableQuery = `
+        const createPostsTable = `
             CREATE TABLE IF NOT EXISTS posts (
                 id SERIAL PRIMARY KEY,
                 title VARCHAR(255) NOT NULL,
                 content TEXT NOT NULL,
-                author VARCHAR(100) DEFAULT 'Anonymous',  -- fixed quotes
+                author VARCHAR(100) DEFAULT 'Anonymous',
                 created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
             );
         `;
-        const createUserTable = `
-         CREATE TABLE users   (
-            id SERIAL PRIMARY KEY,
-            email VARCHAR(400) UNIQUE NOT NULL,
-            password TEXT NOT NULL,
-            Created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-         );
+
+        const createUsersTable = `
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                email VARCHAR(400) UNIQUE NOT NULL,
+                password TEXT NOT NULL,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            );
         `;
 
-        await pool.query(createTableQuery);
-        await pool.query(createUserTable);
-        console.log("Database Initialized.");
+        await pool.query(createPostsTable);
+        await pool.query(createUsersTable);
+        console.log("Database initialized.");
     } catch (error) {
-        console.error("Error connecting or initializing the database:", error.message);
+        if (error instanceof Error) {
+            console.error(" Error connecting or initializing the database:", error.message);
+        } else {
+            console.error(" Unknown error during DB initialization:", error);
+        }
         process.exit(1);
     }
 }
 
 export default pool;
-export {  initializeDB };
+export { initializeDB };
