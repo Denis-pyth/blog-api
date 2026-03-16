@@ -1,6 +1,6 @@
-import * as postService from "../service/service.js";
+import * as postService from "../service/service";
 import { Request, Response } from "express";
-import type { CreatePostInput, UpdatePostInput } from "../repository/Post.js";
+import type { CreatePostInput, UpdatePostInput } from "../repository/Post";
 
 
 

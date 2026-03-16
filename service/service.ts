@@ -1,5 +1,5 @@
-import * as Post from "../repository/Post.js";
-import type { Post as PostType, CreatePostInput, UpdatePostInput } from "../repository/Post.js";
+import * as Post from "../repository/Post";
+import type { Post as PostType, CreatePostInput, UpdatePostInput } from "../repository/Post";
 
 
 

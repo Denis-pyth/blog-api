@@ -13,16 +13,7 @@ interface DBConfig {
     idleTimeoutMillis: number;
     connectionTimeoutMillis: number;
 }
-
-
-function getEnvVar(key: string): string {
-    const value = process.env[key];
-    if (!value) {
-        console.error(` Missing environment variable: ${key}`);
-        process.exit(1);
-    }
-    return value;
-}
+import { getEnvVar } from "../utils/env";
 
 
 const dbConfig: DBConfig = {

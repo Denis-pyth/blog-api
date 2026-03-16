@@ -5,9 +5,9 @@ import {
   createPost,
   updatePost,
   deletePost
-} from "../controllers/controller.js";
+} from "../controllers/controller";
 
-import { authenticate } from "../middleware/auth.middleware.js";
+import { authenticate } from "../middleware/auth.middleware";
 
 const router: Router = express.Router();
 //public routes

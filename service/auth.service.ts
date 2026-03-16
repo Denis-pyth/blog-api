@@ -1,7 +1,8 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { createUser, findByEmail, type User } from "../repository/User.js"
+import { createUser, findByEmail, type User } from "../repository/User"
+import { getEnvVar } from "../utils/env";
 
 dotenv.config();
 
@@ -43,11 +44,3 @@ export async function loginUser(email: string, password: string): Promise<AuthRe
   return { token, user: safeUser};
 }
 
-function getEnvVar(key: string): string {
-    const value = process.env[key];
-    if (!value) {
-        console.error(` Missing environment variable: ${key}`);
-        process.exit(1);
-    }
-    return value;
-  }
