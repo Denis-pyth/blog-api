@@ -1,26 +1,47 @@
-import pool from "../db/db";
+import prisma from "../db/prisma";
 
 
-export interface User {
-    id: number;
-    email: string;
-    password: string;
-    created_at: Date;
-}
+import type { User } from "../generated/prisma";
 
+
+
+export type { User };
+
+
+export type SafeUser = Omit<User, "password">;
 
 export async function findByEmail(email: string): Promise<User | null> {
-    const result = await pool.query<User>(
-        "SELECT * FROM users WHERE email = $1",
-        [email]
-    );
-    return result.rows[0] ?? null;
+    return prisma.user.findUnique({
+        where: { email },
+    });
 }
 
-export async function createUser(email: string, hashedPassword: string): Promise<User> {
-    const result = await pool.query<User>(
-        "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email, created_at",
-        [email, hashedPassword]
-    );
-    return result.rows[0];
+export async function findById(id: string): Promise<SafeUser | null> {
+    return prisma.user.findUnique({
+        where: { id },
+        select: {
+            id: true,
+            email: true,
+            username: true,
+            bio: true,
+            avatar: true,
+            createdAt: true,
+            updatedAt: true,
+            password: false,
+        },
+    });
+}
+
+export async function createUser(
+    email: string,
+    username: string,
+    hashedPassword: string
+): Promise<User> {
+    return prisma.user.create({
+        data: {
+            email,
+            username,
+            password: hashedPassword,
+        },
+    });
 }

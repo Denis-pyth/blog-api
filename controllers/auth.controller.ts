@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 
 interface RegisterBody {
     email: string;
+    username: string;
     password: string;
 }
 
@@ -14,8 +15,8 @@ interface LoginBody {
 
 export async function register(req: Request<{},{}, RegisterBody>, res: Response): Promise<void> {
   try {
-    const { email, password } = req.body;
-    const user = await authService.registerUser(email, password);
+    const { email, username, password } = req.body;
+    const user = await authService.registerUser(email, username, password);
     res.status(201).json({ success: true, data: user });
   } catch (err) {
         if (err instanceof Error) {
