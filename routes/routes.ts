@@ -2,6 +2,7 @@ import express, { Router } from "express";
 import {
   getAllPosts,
   getPostById,
+  getPostBySlug,
   createPost,
   updatePost,
   deletePost
@@ -13,6 +14,7 @@ const router: Router = express.Router();
 //public routes
 router.get("/", getAllPosts);
 router.get("/:id", getPostById);
+router.get("/slug/:slug", getPostBySlug);
 
 //protected routes
 router.post("/",authenticate, createPost);
