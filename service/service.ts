@@ -1,5 +1,5 @@
 import * as Post from "../repository/Post";
-import type { Post as PostType, CreatePostInput, UpdatePostInput } from "../repository/Post";
+import type { Post as PostType, CreatePostInput, UpdatePostInput,  PaginationInput, PaginatedPosts } from "../repository/Post";
 
 export async function createPost(data: CreatePostInput): Promise<PostType> {
     if (!data.title || !data.content || !data.slug || !data.authorId) {
@@ -8,10 +8,9 @@ export async function createPost(data: CreatePostInput): Promise<PostType> {
     return await Post.create(data);
 }
 
-export async function getAllPosts(): Promise<PostType[]> {
-    return await Post.getAll();
+export async function getAllPosts(pagination: PaginationInput = {}): Promise<PaginatedPosts> {
+    return await Post.getAll(pagination);
 }
-
 
 export async function getPostById(id: string): Promise<PostType> {
     const post = await Post.getById(id);

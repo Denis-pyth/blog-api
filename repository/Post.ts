@@ -20,6 +20,16 @@ export interface UpdatePostInput {
     published?: boolean;
 }
 
+export interface PaginationInput {
+    cursor?: string; 
+    limit?: number;   
+}
+
+export interface PaginatedPosts {
+    posts: Post[];
+    nextCursor: string | null; 
+    hasMore: boolean;
+}
 // Create post
 export async function create(input: CreatePostInput): Promise<Post> {
     return prisma.post.create({
@@ -36,14 +46,25 @@ export async function create(input: CreatePostInput): Promise<Post> {
 }
 
 // GET all posts
-export async function getAll(): Promise<Post[]> {
-    return prisma.post.findMany({
+export async function getAll(pagination: PaginationInput = {}): Promise<PaginatedPosts> {
+    const limit = pagination.limit ?? 10; 
+    const posts = await prisma.post.findMany({
         where: {
             deletedAt: null,
             published: true,
         },
         orderBy: { createdAt: "desc" },
-    });
+        take: limit + 1,     
+        ...(pagination.cursor && {
+            cursor: { id: pagination.cursor },
+            skip: 1,
+        }),
+    });   
+    const hasMore = posts.length > limit;
+    if (hasMore) posts.pop();
+    const nextCursor = hasMore ? posts[posts.length - 1].id : null;
+
+    return { posts, nextCursor, hasMore };
 }
 
 // GET post by ID

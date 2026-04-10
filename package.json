@@ -20,7 +20,8 @@
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.16.3",
     "prisma": "^7.5.0",
-    "slugify": "^1.6.9"
+    "slugify": "^1.6.9",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

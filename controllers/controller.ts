@@ -46,8 +46,15 @@ export async function getAllPosts(
     res: Response
 ): Promise<void> {
     try {
-        const posts = await postService.getAllPosts();
-        res.status(200).json({ success: true, data: posts });
+        const cursor = req.query.cursor as string | undefined;
+        const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
+        if (isNaN(limit) || limit < 1 || limit > 50) {
+            res.status(400).json({ success: false, message: "limit must be between 1 and 50" });
+            return;
+        }
+
+        const result = await postService.getAllPosts({ cursor, limit });
+        res.status(200).json({ success: true, data: result });
     } catch (err) {
         if (err instanceof Error) {
             res.status(500).json({ success: false, message: err.message });
