@@ -10,6 +10,8 @@ import {
 
 import { authenticate } from "../middleware/auth.middleware";
 import { cacheMiddleware } from "../middleware/cache.middleware";
+import { validate } from "../middleware/validate.middleware";
+import { CreatePostSchema, UpdatePostSchema } from "../schemas/post.schema";
 import commentRoutes from "./comment.routes";
 import likeRoutes from "./like.routes";
 
@@ -20,8 +22,8 @@ router.get("/:id", getPostById);
 router.get("/slug/:slug", getPostBySlug);
 
 //protected routes
-router.post("/",authenticate, createPost);
-router.put("/:id",authenticate, updatePost);
+router.post("/",authenticate, validate(CreatePostSchema), createPost);
+router.put("/:id",authenticate, validate(UpdatePostSchema), updatePost);
 router.delete("/:id",authenticate, deletePost);
 
 //nested routes
