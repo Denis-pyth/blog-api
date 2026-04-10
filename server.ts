@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import routes from "./routes/routes";
 import authRoutes from "./routes/auth.routes";
-
+import "./db/redis";
 
 const app: Application = express();
 
