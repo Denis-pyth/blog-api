@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import * as postService from "../service/service";
 import type { CreatePostInput, UpdatePostInput } from "../repository/Post";
 import slugify from "slugify";
+import { invalidatePostsCache } from "../middleware/cache.middleware";
 
 interface CreatePostBody {
     title: string;
@@ -27,7 +28,10 @@ export async function createPost(
         };
 
         const post = await postService.createPost(input);
+        await invalidatePostsCache();        
         res.status(201).json({ success: true, data: post });
+        
+
     } catch (err) {
         if (err instanceof Error) {
             res.status(400).json({ success: false, message: err.message });
@@ -92,6 +96,7 @@ export async function updatePost(
 ): Promise<void> {
     try {
         const updated = await postService.updatePost(req.params.id, req.body);
+        await invalidatePostsCache();
         res.status(200).json({ success: true, data: updated });
     } catch (err) {
         if (err instanceof Error) {
@@ -108,6 +113,7 @@ export async function deletePost(
 ): Promise<void> {
     try {
         await postService.deletePost(req.params.id);
+        await invalidatePostsCache();
         res.status(204).send();
     } catch (err) {
         if (err instanceof Error) {

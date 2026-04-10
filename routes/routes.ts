@@ -9,10 +9,11 @@ import {
 } from "../controllers/controller";
 
 import { authenticate } from "../middleware/auth.middleware";
+import { cacheMiddleware } from "../middleware/cache.middleware";
 
 const router: Router = express.Router();
 //public routes
-router.get("/", getAllPosts);
+router.get("/", cacheMiddleware(60), getAllPosts);
 router.get("/:id", getPostById);
 router.get("/slug/:slug", getPostBySlug);
 
