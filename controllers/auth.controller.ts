@@ -1,5 +1,6 @@
 import * as authService from "../service/auth.service";
 import { Request, Response } from "express";
+import { blacklistToken } from "../middleware/session.middleware";
 
 interface RegisterBody {
     email: string;
@@ -37,6 +38,32 @@ export async function login(req: Request<{},{}, LoginBody>, res: Response): Prom
             res.status(400).json({ success: false, message: err.message });
         } else {
             res.status(400).json({ success: false, message: "An unexpected error occurred" });
+        }
+    }
+}
+
+export async function logout(
+    req: Request,
+    res: Response
+): Promise<void> {
+    try {
+        const token = req.token;
+        if (!token) {
+            res.status(400).json({ success: false, message: "No token found" });
+            return;
+        }
+       
+        const decoded = req.user;
+        const now = Math.floor(Date.now() / 1000);
+        const expiresIn = decoded?.exp ? decoded.exp - now : 3600;
+
+        await blacklistToken(token, expiresIn);
+        res.status(200).json({ success: true, message: "Logged out successfully" });
+    } catch (err) {
+        if (err instanceof Error) {
+            res.status(500).json({ success: false, message: err.message });
+        } else {
+            res.status(500).json({ success: false, message: "An unexpected error occurred" });
         }
     }
 }

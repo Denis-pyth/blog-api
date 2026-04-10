@@ -1,11 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { getEnvVar } from "../utils/env";
+import { isTokenBlacklisted } from "./session.middleware";
 
 declare global {
     namespace Express {
         interface Request {
             user?: JwtPayload;
+            token?: string;
         }
     }
 }
@@ -32,18 +34,31 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
         res.status(401).json({ message: "Malformed token" });
         return;
     }
+        (async () => {
+        try {          
+            const blacklisted = await isTokenBlacklisted(token);
+            if (blacklisted) {
+                res.status(401).json({ message: "Token has been invalidated. Please login again." });
+                return;
+            }
 
-    try {
-        const decoded = jwt.verify(token, getEnvVar("JWT_SECRET")) as JwtPayload;
-        req.user = decoded;
-        next();
-    } catch (err) {
-        if (err instanceof jwt.TokenExpiredError) {
-            res.status(401).json({ message: "Token expired" });
-        } else if (err instanceof jwt.JsonWebTokenError) {
-            res.status(401).json({ message: "Invalid token" });
-        } else {
-            res.status(401).json({ message: "Authentication failed" });
+            const decoded = jwt.verify(token, getEnvVar("JWT_SECRET")) as JwtPayload;
+            req.user = decoded;
+            req.token = token; 
+            next();
+        } catch (err) {
+            if (err instanceof jwt.TokenExpiredError) {
+                res.status(401).json({ message: "Token expired" });
+            } else if (err instanceof jwt.JsonWebTokenError) {
+                res.status(401).json({ message: "Invalid token" });
+            } else {
+                res.status(401).json({ message: "Authentication failed" });
+            }
         }
-    }
+    })();
+
+
+  
 }
+ 
+ 
