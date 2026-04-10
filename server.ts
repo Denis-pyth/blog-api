@@ -4,7 +4,7 @@ dotenv.config();
 import routes from "./routes/routes";
 import authRoutes from "./routes/auth.routes";
 import "./db/redis";
-import { rateLimitMiddleware } from "./middleware/ratelimit.middleware";
+import { rateLimitMiddleware } from "./middleware/rateLimit.middleware";
 
 const app: Application = express();
 

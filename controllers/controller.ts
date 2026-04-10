@@ -16,7 +16,7 @@ export async function createPost(
 ): Promise<void> {
     try {
         const { title, content, published } = req.body;
-        const slug = slugify(title, { lower: true, strict: true });
+        const slug = slugify(title, { lower: true, strict: true }) + "-" + Date.now();
         const authorId = req.user!.id.toString();
 
         const input: CreatePostInput = {
